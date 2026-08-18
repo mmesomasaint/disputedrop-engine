@@ -76,7 +76,7 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
 ```bash
 curl -X GET "http://localhost:8000/api/v1/cancellations/<CANCELLATION_UUID>"
 
-e.g.
+# e.g.
 curl -X GET "http://localhost:8000/api/v1/cancellations/a1b2c3d4-e5f6-7a8b-9c0d-1234567890ab"
 
 ```
