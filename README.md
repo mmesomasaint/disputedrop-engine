@@ -52,7 +52,15 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
    ```bash
    curl -X GET "http://localhost:8000/api/v1/merchants"
    ```
-2. **Initiate Cancellation Intent ($6.99)**
+2. **Provide Stripe Sandbox Key**
+   - Log into your Stripe Dashboard.
+   - Toggle `Test mode` at the top right.
+   - Copy your test secret key (begins with `sk_test_51...`).
+   - Paste it into your `.env` file:
+     ```Ini,TOML
+     STRIPE_SECRET_KEY="sk_test_51..."
+     ```
+3. **Initiate Cancellation Intent ($6.99)**
    ```bash
    curl -X POST http://localhost:8000/api/v1/cancellations \
      -H "Content-Type: application/json" \
