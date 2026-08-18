@@ -1,6 +1,10 @@
 # DisputeDrop — Core Backend Engine
 
+**Autonomous Certified Mail & Legal Fax Cancellation Infrastructure**
+
 DisputeDrop is an automated cancellation and legal notice engine designed to terminate recurring gym memberships, telecom plans, and enterprise subscriptions without human retention friction.
+
+DisputeDrop bypasses dark-pattern retention traps, fake phone queues, and mandatory in-person visits by auto-compiling jurisdiction-specific legal revocation instruments, embedding user canvas signatures, and executing physical USPS Certified Mail and legal facsimile dispatch with live delivery tracking.
 
 ## Key Features
 - **Statutory PDF Notice Engine:** Headless Puppeteer engine builds verified legal notice documents embedded with user canvas signatures.
@@ -9,6 +13,14 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
 - **Reliable Queues:** BullMQ & Redis async queue with automated exponential backoff retries.
 
 ---
+
+## Tech Stack
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20_LTS-green.svg?logo=node.js)](https://nodejs.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748.svg?logo=prisma)](https://www.prisma.io/)
+[![BullMQ](https://img.shields.io/badge/Queue-BullMQ%20%2B%20Redis-DC382D.svg?logo=redis)](https://bullmq.io/)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%2015-336791.svg?logo=postgresql)](https://www.postgresql.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Quick Setup (Local Dev)
 
