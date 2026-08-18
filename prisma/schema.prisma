@@ -1,1 +1,95 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum CancellationStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  DISPATCHED
+  DELIVERED
+  FAILED
+}
+
+enum DispatchMethod {
+  CERTIFIED_MAIL
+  ELECTRONIC_FAX
+  HYBRID_BOTH
+}
+
+model Merchant {
+  id               String           @id @default(uuid())
+  slug             String           @unique
+  name             String
+  category         String           // Gym, Telecom, SaaS, Streaming
+  cancellationType DispatchMethod   @default(HYBRID_BOTH)
+  
+  // Physical Mailing Address for Certified Mail
+  recipientName    String
+  addressLine1     String
+  addressLine2     String?
+  city             String
+  state            String
+  postalCode       String
+  country          String           @default("US")
+  
+  // Legal Electronic Fax Destination
+  faxNumber        String?
+  
+  // Statutory and Custom Legal Text Requirement
+  statutoryClause  String           @db.Text
+  
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  cancellations    Cancellation[]
+}
+
+model Cancellation {
+  id                    String              @id @default(uuid())
+  merchantId            String
+  merchant              Merchant            @relation(fields: [merchantId], references: [id])
+  
+  // User Demographics
+  customerFullName      String
+  customerEmail         String
+  customerPhone         String
+  customerAddressLine1  String
+  customerCity          String
+  customerState         String
+  customerPostalCode    String
+  
+  // Target Contract Attributes
+  membershipId          String
+  accountPinOrLast4     String?
+  reasonForLeaving      String?
+  signatureDataUrl      String              @db.Text // Base64 Canvas PNG
+  
+  // Fulfillment & Tracking Data
+  status                CancellationStatus  @default(PENDING_PAYMENT)
+  generatedPdfPath      String?
+  
+  // Lob Certified Mail Metadata
+  lobLetterId           String?
+  certifiedTrackingNumber String?
+  lobTrackingUrl        String?
+  
+  // Phaxio Fax Metadata
+  phaxioFaxId           String?
+  
+  // Payment Integration
+  stripePaymentIntentId String?             @unique
+  amountPaidCents       Int                 @default(699) // $6.99
+  
+  failureReason         String?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  @@index([customerEmail])
+  @@index([status])
+}
