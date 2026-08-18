@@ -40,6 +40,12 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
    npm run dev
    ```
 
+   The API will be available at `http://localhost:8000`. You can verify it is running by checking the health endpoint:
+   
+   ```bash
+   curl http://localhost:8000/health
+   ```
+
 ## Testing the API via CURL
 
 1. **Retrieve Supported Merchants**
