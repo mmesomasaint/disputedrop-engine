@@ -1,1 +1,39 @@
+version: '3.8'
 
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/disputedrop?schema=public
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - STRIPE_SECRET_KEY=sk_test_mock
+      - STRIPE_WEBHOOK_SECRET=whsec_mock
+      - LOB_API_KEY=test_lob_key
+      - PHAXIO_API_KEY=test_phaxio_key
+      - PHAXIO_API_SECRET=test_phaxio_secret
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=disputedrop
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:
