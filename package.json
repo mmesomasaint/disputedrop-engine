@@ -10,7 +10,10 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",
-    "test": "jest --runInBand --detectOpenHandles --forceExit"
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "test:unit": "jest tests/unit --runInBand",
+    "test:integration": "jest tests/integration --runInBand --detectOpenHandles",
+    "test:coverage": "jest --coverage --runInBand --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "@prisma/client": "^5.14.0",
