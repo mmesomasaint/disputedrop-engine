@@ -4,12 +4,12 @@
   "description": "Production Engine for Autonomous Certified Mail and Legal Fax Cancellations",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "nodemon --watch src -e ts,html --exec ts-node src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
+    "prisma:seed": "tsx prisma/seed.ts",
     "test": "jest --runInBand --detectOpenHandles --forceExit",
     "test:unit": "jest tests/unit --runInBand",
     "test:integration": "jest tests/integration --runInBand --detectOpenHandles",
@@ -28,6 +28,7 @@
     "express": "^4.19.2",
     "express-rate-limit": "^7.3.0",
     "form-data": "^4.0.0",
+    "fs-extra": "^11.4.0",
     "handlebars": "^4.7.8",
     "helmet": "^7.1.0",
     "ioredis": "^5.4.1",
@@ -51,6 +52,7 @@
     "supertest": "^7.0.0",
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.12",
     "typescript": "^5.4.5"
   }
 }
