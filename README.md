@@ -14,7 +14,7 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-org/disputedrop-engine.git
+   git clone https://github.com/mmesomasaint/disputedrop-engine.git
    cd disputedrop-engine
    ```
    
