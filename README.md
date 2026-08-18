@@ -12,24 +12,30 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
 
 ## Quick Setup (Local Dev)
 
-1. **Install Dependencies:**
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/your-org/disputedrop-engine.git
+   cd disputedrop-engine
+   ```
+   
+2. **Install Dependencies:**
    ```bash
    npm install
    ```
-2. **Setup Local Environment:**
+3. **Setup Local Environment:**
    ```bash
    cp .env.example .env
    ```
-3. **Start Storage, PostgreSQL & Redis:**
+4. **Start Storage, PostgreSQL & Redis:**
    ```bash
    docker-compose up postgres redis -d
    ```
-4. **Run Migrations & Seed Vendors:**
+5. **Run Migrations & Seed Vendors:**
    ```bash
    npx prisma migrate dev
    npm run prisma:seed
    ```
-5. **Start Dev Server:**
+6. **Start Dev Server:**
    ```bash
    npm run dev
    ```
