@@ -8,11 +8,16 @@ import { AppError } from '../errors/app-error';
 const redisClient = new Redis({
   host: config.redis.host,
   port: config.redis.port,
-  enableOfflineQueue: false,
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
 });
 
 redisClient.on('error', (err) => {
-  console.warn('[RateLimiter] Redis connection issue; fallback in place:', err.message);
+  console.warn('[RateLimiter] Redis connection issue:', err.message);
+});
+
+redisClient.on('connect', () => {
+  console.log('[RateLimiter] Connected to Redis successfully');
 });
 
 /**
