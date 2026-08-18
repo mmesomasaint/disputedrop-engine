@@ -54,37 +54,31 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
    ```
 2. **Initiate Cancellation Intent ($6.99)**
    ```bash
-   curl -X POST "http://localhost:8000/api/v1/cancellations" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "merchantId": "<MERCHANT_UUID>",
-      "customerFullName": "John Doe",
-      "customerEmail": "john@example.com",
-      "customerPhone": "5551234567",
-      "customerAddressLine1": "742 Evergreen Terrace",
-      "customerCity": "Springfield",
-      "customerState": "OR",
-      "customerPostalCode": "97477",
-      "membershipId": "PF-889911",
-      "signatureDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-    }'
+   curl -X POST http://localhost:8000/api/v1/cancellations \
+     -H "Content-Type: application/json" \
+     -d @payload.json
    ```
      Returns:
      ```JSON
      {
        "status": "success",
        "data": {
-         "cancellationId": "UUID",
+         "cancellationId": "a1b2c3d4-e5f6-7a8b-9c0d-1234567890ab",
          "clientSecret": "pi_xxx_secret_xxx",
          "amountCents": 699
        }
      }
+     
      ```
 
 ## Check Dispute Tracking Status
 
 ```bash
 curl -X GET "http://localhost:8000/api/v1/cancellations/<CANCELLATION_UUID>"
+
+e.g.
+curl -X GET "http://localhost:8000/api/v1/cancellations/a1b2c3d4-e5f6-7a8b-9c0d-1234567890ab"
+
 ```
 
 ## Test Configuration
