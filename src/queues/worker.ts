@@ -31,7 +31,7 @@ export const initWorker = () => {
       });
 
       try {
-        // 1. Generate Legally-Binding Notice Document
+        // Generate Legally-Binding Notice Document
         const pdfPath = await pdfService.compileCancellationDocument({
           cancellationId: record.id,
           currentDate: new Date().toLocaleDateString('en-US', {
@@ -63,7 +63,7 @@ export const initWorker = () => {
         let lobResult = null;
         let faxResult = null;
 
-        // 2. Dispatch US Certified Mail
+        // Dispatch US Certified Mail
         if (
           record.merchant.cancellationType === DispatchMethod.CERTIFIED_MAIL ||
           record.merchant.cancellationType === DispatchMethod.HYBRID_BOTH
@@ -84,7 +84,7 @@ export const initWorker = () => {
           });
         }
 
-        // 3. Dispatch Facsimile Notice
+        // Dispatch Facsimile Notice
         if (
           (record.merchant.cancellationType === DispatchMethod.ELECTRONIC_FAX ||
             record.merchant.cancellationType === DispatchMethod.HYBRID_BOTH) &&
@@ -97,7 +97,7 @@ export const initWorker = () => {
           });
         }
 
-        // 4. Update Database State to Dispatched
+        // Update Database State to Dispatched
         await prisma.cancellation.update({
           where: { id: cancellationId },
           data: {
