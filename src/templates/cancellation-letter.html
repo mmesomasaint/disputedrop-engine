@@ -1,1 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      color: #111111;
+      line-height: 1.5;
+      font-size: 11pt;
+    }
+    .header {
+      margin-bottom: 25px;
+    }
+    .sender-block, .recipient-block {
+      margin-bottom: 20px;
+    }
+    .tracking-id {
+      font-family: monospace;
+      font-size: 9pt;
+      color: #555555;
+      margin-bottom: 10px;
+    }
+    .subject {
+      font-weight: bold;
+      text-decoration: underline;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+    .content-body {
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+    .legal-statutory {
+      background-color: #f9f9f9;
+      border-left: 3px solid #333333;
+      padding: 10px;
+      margin: 15px 0;
+      font-style: italic;
+    }
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    .details-table td {
+      padding: 4px 0;
+      vertical-align: top;
+    }
+    .details-table td.label {
+      width: 30%;
+      font-weight: bold;
+    }
+    .signature-area {
+      margin-top: 30px;
+    }
+    .signature-img {
+      max-height: 50px;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .disclaimer {
+      font-size: 8pt;
+      color: #777777;
+      margin-top: 40px;
+      border-top: 1px solid #cccccc;
+      padding-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tracking-id">
+    DISPUTEDROP TRANSACTION IDENTIFIER: {{cancellationId}}<br>
+    ELECTRONIC TRANSMISSION DATE: {{currentDate}}
+  </div>
 
+  <div class="sender-block">
+    <strong>FROM:</strong><br>
+    {{customerFullName}}<br>
+    {{customerAddressLine1}}<br>
+    {{customerCityStateZip}}<br>
+    Email: {{customerEmail}} | Phone: {{customerPhone}}
+  </div>
+
+  <div class="recipient-block">
+    <strong>TO (FORMAL NOTICE DESIGNEE):</strong><br>
+    {{merchantName}}<br>
+    ATTN: {{merchantRecipient}}<br>
+    {{merchantAddressLine1}}<br>
+    {{merchantCityStateZip}}
+  </div>
+
+  <div class="subject">
+    RE: NOTICE OF CONTRACT REVOCATION, MEMBERSHIP TERMINATION & EFT DEBIT REVOCATION
+  </div>
+
+  <div class="content-body">
+    To Whom It May Concern at {{merchantName}},
+  </div>
+
+  <div class="content-body">
+    Please accept this written instrument as my unequivocal and unconditional notice of termination for any and all contractual services, memberships, and billing accounts associated with my identity, effective immediately upon receipt.
+  </div>
+
+  <table class="details-table">
+    <tr>
+      <td class="label">Primary Member Name:</td>
+      <td>{{customerFullName}}</td>
+    </tr>
+    <tr>
+      <td class="label">Membership / Account #:</td>
+      <td><strong>{{membershipId}}</strong></td>
+    </tr>
+    {{#if accountPinOrLast4}}
+    <tr>
+      <td class="label">Pin / Last 4 Digits:</td>
+      <td>{{accountPinOrLast4}}</td>
+    </tr>
+    {{/if}}
+    {{#if reasonForLeaving}}
+    <tr>
+      <td class="label">Reason For Cancellation:</td>
+      <td>{{reasonForLeaving}}</td>
+    </tr>
+    {{/if}}
+  </table>
+
+  <div class="legal-statutory">
+    "{{statutoryClause}}"
+  </div>
+
+  <div class="content-body">
+    <strong>REVOCATION OF EFT AUTHORIZATION:</strong> Effective immediately, you are instructed to cease all recurring automated charges, pre-authorized ACH transfers, or payment card debits under the Electronic Fund Transfer Act (15 U.S.C. 1693 et seq.) and Consumer Financial Protection Bureau regulations. Any subsequent charges attempted on my financial accounts will be reported as unauthorized transactions.
+  </div>
+
+  <div class="signature-area">
+    Sincerely,
+    <br><br>
+    <img src="{{signatureDataUrl}}" class="signature-img" alt="Electronic Signature">
+    <strong>{{customerFullName}}</strong><br>
+    Authorized Account Holder
+  </div>
+
+  <div class="disclaimer">
+    Delivered via DisputeDrop Automated Dispatch System. Certified proof of mail transmission and facsimile electronic audit logs are preserved for litigation or banking dispute records.
+  </div>
+</body>
+</html>
