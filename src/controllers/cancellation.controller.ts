@@ -1,14 +1,16 @@
 // src/controllers/cancellation.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import Stripe from 'stripe';
-import { config } from '../config';
+import { stripeService } from '../services/stripe.service';
 import { AppError } from '../errors/app-error';
 
 const prisma = new PrismaClient();
-const stripe = new Stripe(config.stripe.secretKey, { apiVersion: '2024-04-10' });
 
 export class CancellationController {
+  /**
+   * POST /api/v1/cancellations
+   * Initializes a cancellation intent and generates a Stripe clientSecret ($6.99).
+   */
   public async createCancellationIntent(req: Request, res: Response, next: NextFunction) {
     try {
       const payload = req.body;
@@ -21,18 +23,15 @@ export class CancellationController {
         throw new AppError('Specified target merchant does not exist.', 404);
       }
 
-      // Create Stripe PaymentIntent for $6.99
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: config.stripe.fixedPriceCents,
-        currency: 'usd',
-        receipt_email: payload.customerEmail,
-        metadata: {
+      // Generate PaymentIntent via encapsulated Stripe service
+      const { paymentIntentId, clientSecret, amountCents } =
+        await stripeService.createPaymentIntent(payload.customerEmail, {
           merchantName: merchant.name,
           customerName: payload.customerFullName,
-        },
-      });
+          membershipId: payload.membershipId,
+        });
 
-      // Store initial record in DB
+      // Persist initial record in PostgreSQL
       const cancellation = await prisma.cancellation.create({
         data: {
           merchantId: payload.merchantId,
@@ -47,7 +46,8 @@ export class CancellationController {
           accountPinOrLast4: payload.accountPinOrLast4,
           reasonForLeaving: payload.reasonForLeaving,
           signatureDataUrl: payload.signatureDataUrl,
-          stripePaymentIntentId: paymentIntent.id,
+          stripePaymentIntentId: paymentIntentId,
+          amountPaidCents: amountCents,
           status: 'PENDING_PAYMENT',
         },
       });
@@ -56,8 +56,8 @@ export class CancellationController {
         status: 'success',
         data: {
           cancellationId: cancellation.id,
-          clientSecret: paymentIntent.client_secret,
-          amountCents: config.stripe.fixedPriceCents,
+          clientSecret,
+          amountCents,
         },
       });
     } catch (error) {
@@ -65,6 +65,10 @@ export class CancellationController {
     }
   }
 
+  /**
+   * GET /api/v1/cancellations/:id
+   * Queries real-time fulfillment and tracking status.
+   */
   public async getCancellationStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
@@ -75,11 +79,13 @@ export class CancellationController {
           status: true,
           certifiedTrackingNumber: true,
           lobLetterId: true,
+          lobTrackingUrl: true,
           phaxioFaxId: true,
+          failureReason: true,
           createdAt: true,
           updatedAt: true,
           merchant: {
-            select: { name: true, category: true },
+            select: { name: true, category: true, slug: true },
           },
         },
       });
@@ -88,7 +94,10 @@ export class CancellationController {
         throw new AppError('Cancellation record not found.', 404);
       }
 
-      res.status(200).json({ status: 'success', data: { cancellation } });
+      res.status(200).json({
+        status: 'success',
+        data: { cancellation },
+      });
     } catch (error) {
       next(error);
     }
