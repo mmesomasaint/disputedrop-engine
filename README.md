@@ -57,17 +57,17 @@ DisputeDrop is an automated cancellation and legal notice engine designed to ter
       "signatureDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
     }'
    ```
-  Returns:
-  ```JSON
-  {
-    "status": "success",
-    "data": {
-      "cancellationId": "UUID",
-      "clientSecret": "pi_xxx_secret_xxx",
-      "amountCents": 699
-    }
-  }
-  ```
+     Returns:
+     ```JSON
+     {
+       "status": "success",
+       "data": {
+         "cancellationId": "UUID",
+         "clientSecret": "pi_xxx_secret_xxx",
+         "amountCents": 699
+       }
+     }
+     ```
 
 ## Check Dispute Tracking Status
 
