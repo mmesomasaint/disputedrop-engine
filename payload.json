@@ -1,0 +1,14 @@
+{
+  "merchantId": "dd310936-7498-4d45-be6e-d248cdb8d5de",
+  "customerFullName": "Luxurious Saint",
+  "customerEmail": "luxurious.saint@example.com",
+  "customerPhone": "+14155552671",
+  "customerAddressLine1": "742 Evergreen Terrace",
+  "customerCity": "Springfield",
+  "customerState": "OR",
+  "customerPostalCode": "97477",
+  "membershipId": "PF-8849201-X",
+  "accountPinOrLast4": "4401",
+  "reasonForLeaving": "Relocated out of state and local facility is inaccessible.",
+  "signatureDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+}
