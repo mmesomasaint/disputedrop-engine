@@ -2,52 +2,44 @@
 import { Request, Response, NextFunction } from 'express';
 import Stripe from 'stripe';
 import { PrismaClient } from '@prisma/client';
-import { config } from '../config';
+import { stripeService } from '../services/stripe.service';
 import { cancellationQueue } from '../queues/cancellation.queue';
 
 const prisma = new PrismaClient();
-const stripe = new Stripe(config.stripe.secretKey, { apiVersion: '2024-04-10' });
 
 export class WebhookController {
   public async handleStripeWebhook(req: Request, res: Response, next: NextFunction) {
     const signature = req.headers['stripe-signature'] as string;
 
-    let event: Stripe.Event;
-
     try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        signature,
-        config.stripe.webhookSecret
-      );
-    } catch (err: any) {
-      console.error(`Webhook signature validation failed: ${err.message}`);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+      const event = stripeService.constructWebhookEvent(req.body, signature);
 
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-      const cancellation = await prisma.cancellation.findUnique({
-        where: { stripePaymentIntentId: paymentIntent.id },
-      });
-
-      if (cancellation) {
-        await prisma.cancellation.update({
-          where: { id: cancellation.id },
-          data: { status: 'PAID' },
+        const cancellation = await prisma.cancellation.findUnique({
+          where: { stripePaymentIntentId: paymentIntent.id },
         });
 
-        // Enqueue job for background processing
-        await cancellationQueue.add('dispatch-cancellation', {
-          cancellationId: cancellation.id,
-        });
+        if (cancellation) {
+          await prisma.cancellation.update({
+            where: { id: cancellation.id },
+            data: { status: 'PAID' },
+          });
 
-        console.log(`[Stripe Webhook] Enqueued processing for cancellation: ${cancellation.id}`);
+          // Enqueue job for background PDF generation & carrier dispatch
+          await cancellationQueue.add('dispatch-cancellation', {
+            cancellationId: cancellation.id,
+          });
+
+          console.log(`[Stripe Webhook] Enqueued processing for cancellation: ${cancellation.id}`);
+        }
       }
-    }
 
-    res.status(200).json({ received: true });
+      res.status(200).json({ received: true });
+    } catch (err) {
+      next(err);
+    }
   }
 }
 
