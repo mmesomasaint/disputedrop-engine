@@ -6,6 +6,7 @@ import { config } from '../config';
 import { pdfService } from '../services/pdf.service';
 import { mailService } from '../services/mail.service';
 import { faxService } from '../services/fax.service';
+import { storageService } from '../services/storage.service';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +32,7 @@ export const initWorker = () => {
       });
 
       try {
-        // Generate Legally-Binding Notice Document
+        // 1. Generate Legally-Binding Notice Document via Puppeteer
         const pdfPath = await pdfService.compileCancellationDocument({
           cancellationId: record.id,
           currentDate: new Date().toLocaleDateString('en-US', {
@@ -55,15 +56,18 @@ export const initWorker = () => {
           signatureDataUrl: record.signatureDataUrl,
         });
 
+        // Verify file on disk through storageService
+        const verifiedPdfPath = await storageService.getPdfPath(pdfPath);
+
         await prisma.cancellation.update({
           where: { id: cancellationId },
-          data: { generatedPdfPath: pdfPath },
+          data: { generatedPdfPath: verifiedPdfPath },
         });
 
         let lobResult = null;
         let faxResult = null;
 
-        // Dispatch US Certified Mail
+        // 2. Dispatch US Certified Mail
         if (
           record.merchant.cancellationType === DispatchMethod.CERTIFIED_MAIL ||
           record.merchant.cancellationType === DispatchMethod.HYBRID_BOTH
@@ -80,11 +84,11 @@ export const initWorker = () => {
             customerCity: record.customerCity,
             customerState: record.customerState,
             customerZip: record.customerPostalCode,
-            pdfFilePath: pdfPath,
+            pdfFilePath: verifiedPdfPath,
           });
         }
 
-        // Dispatch Facsimile Notice
+        // 3. Dispatch Legal Facsimile Notice
         if (
           (record.merchant.cancellationType === DispatchMethod.ELECTRONIC_FAX ||
             record.merchant.cancellationType === DispatchMethod.HYBRID_BOTH) &&
@@ -92,12 +96,12 @@ export const initWorker = () => {
         ) {
           faxResult = await faxService.dispatchLegalFax({
             toFaxNumber: record.merchant.faxNumber,
-            pdfFilePath: pdfPath,
+            pdfFilePath: verifiedPdfPath,
             cancellationId: record.id,
           });
         }
 
-        // Update Database State to Dispatched
+        // 4. Update Database Record with Delivery and Tracking Identifiers
         await prisma.cancellation.update({
           where: { id: cancellationId },
           data: {
@@ -108,9 +112,9 @@ export const initWorker = () => {
           },
         });
 
-        console.log(`✅ Cancellation ${cancellationId} successfully dispatched.`);
+        console.log(`Cancellation ${cancellationId} successfully dispatched.`);
       } catch (err: any) {
-        console.error(`❌ Workflow failed for ${cancellationId}:`, err);
+        console.error(`Workflow execution failed for ${cancellationId}:`, err);
         await prisma.cancellation.update({
           where: { id: cancellationId },
           data: {
@@ -131,6 +135,6 @@ export const initWorker = () => {
   );
 
   worker.on('failed', (job, err) => {
-    console.error(`Job ${job?.id} failed with error: ${err.message}`);
+    console.error(`[Worker Alert] Job ${job?.id} failed with error: ${err.message}`);
   });
 };
